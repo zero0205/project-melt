@@ -1,42 +1,39 @@
 package com.melt;
 
-import com.melt.context.ComponentScanner;
-import com.melt.context.BeanFactory;
+import com.melt.context.ApplicationContext;
 import com.melt.service.UserService;
 import com.melt.repository.UserRepository;
 
-import java.util.List;
-
 public class Main {
     public static void main(String[] args) {
-        System.out.println("=== 🚀 4주차 ComponentScanner + BeanFactory 테스트 ===\n");
+        System.out.println("🎯 4주차 최종 테스트: Component Scan + Bean Factory + DI");
+        System.out.println();
 
         try {
-            // 1. ComponentScanner로 클래스 스캔
-            ComponentScanner scanner = new ComponentScanner();
-            List<Class<?>> foundClasses = scanner.scanComponents("com.melt");
+            // ApplicationContext로 Spring 컨테이너 초기화
+            ApplicationContext context = new ApplicationContext();
+            context.scan("com.melt");
 
-            // 2. BeanFactory로 Component만 Bean 생성
-            BeanFactory beanFactory = new BeanFactory();
-            beanFactory.createAndRegisterBeans(foundClasses);
+            // Bean 가져와서 테스트
+            System.out.println("\n📋 Bean 조회 테스트:");
+            UserService userService = context.getBean(UserService.class);
+            UserRepository userRepository = context.getBean(UserRepository.class);
 
-            // 3. 등록된 Bean 확인
-            beanFactory.printAllBeans();
+            if (userService != null && userRepository != null) {
+                System.out.println("✅ 모든 Bean 조회 성공!");
 
-            // 4. Bean 가져와서 테스트
-            UserService userService = beanFactory.getBean(UserService.class);
-            UserRepository userRepository = beanFactory.getBean(UserRepository.class);
+                // 🎯 핵심 테스트: @Autowired가 제대로 작동하는지 확인
+                System.out.println("\n💡 @Autowired 동작 테스트:");
 
-            if (userService != null) {
-                System.out.println("✅ UserService Bean 조회 성공!");
+                // UserService의 checkDependency() 메소드 호출 (이게 잘 되면 DI 성공!)
+                userService.checkDependency();
+
+                // 실제 비즈니스 로직 실행 (UserService가 UserRepository 사용)
+                System.out.println("\n🚀 비즈니스 로직 테스트:");
+                userService.saveUser("고길동");
+
             } else {
-                System.out.println("❌ UserService Bean 못 찾음");
-            }
-
-            if (userRepository != null) {
-                System.out.println("✅ UserRepository Bean 조회 성공!");
-            } else {
-                System.out.println("❌ UserRepository Bean 못 찾음");
+                System.err.println("❌ Bean 조회 실패");
             }
 
         } catch (Exception e) {
