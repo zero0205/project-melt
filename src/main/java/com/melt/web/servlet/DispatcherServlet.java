@@ -1,5 +1,6 @@
 package com.melt.web.servlet;
 
+import com.melt.web.context.WebApplicationContext;
 import com.melt.web.mapping.HandlerMapping;
 import com.melt.web.method.HandlerMethod;
 import com.melt.controller.UserController;
@@ -14,34 +15,25 @@ import java.util.Arrays;
 
 public class DispatcherServlet extends HttpServlet {
     private HandlerMapping handlerMapping;
+    private WebApplicationContext webApplicationContext;
 
     @Override
     public void init() throws ServletException {
         System.out.println("🚀 DispatcherServlet 초기화 시작...");
 
-        // HandlerMapping 초기화
-        handlerMapping = new HandlerMapping();
-        System.out.println("✅ HandlerMapping 객체 생성 완료");
+        try {
+            // WebApplicationContext 생성 및 초기화
+            webApplicationContext = new WebApplicationContext();
+            webApplicationContext.refresh();
 
-        // Controller들 생성
-        UserController userController = new UserController();
-        TestController testController = new TestController();
-        System.out.println("✅ Controller 객체들 생성 완료");
-        System.out.println("  - UserController: " + userController.getClass().getName());
-        System.out.println("  - TestController: " + testController.getClass().getName());
+            // HandlerMapping 가져오기
+            handlerMapping = webApplicationContext.getHandlerMapping();
 
-        // Controller들 등록
-        System.out.println("🔍 Controller 스캔 시작...");
-        handlerMapping.scanControllers(Arrays.asList(
-                userController,
-                testController
-        ));
-        System.out.println("🔍 Controller 스캔 완료");
-
-        // 등록된 매핑 정보 출력
-        handlerMapping.printMappings();
-
-        System.out.println("✅ DispatcherServlet 초기화 완료!");
+            // 등록된 매핑 정보 출력
+            handlerMapping.printMappings();
+        } catch (Exception e) {
+            throw new ServletException("DispatcherServlet 초기화 실패", e);
+        }
     }
 
     @Override

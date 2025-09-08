@@ -1,9 +1,12 @@
 package com.melt.context;
 
 import com.melt.annotation.Component;
+import com.melt.annotation.Controller;
 import com.melt.annotation.Service;
 import com.melt.annotation.Repository;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +76,8 @@ public class BeanFactory {
         // ✅ Component 어노테이션이 붙은 클래스만
         return clazz.isAnnotationPresent(Component.class) ||
                 clazz.isAnnotationPresent(Service.class) ||
-                clazz.isAnnotationPresent(Repository.class);
+                clazz.isAnnotationPresent(Repository.class) ||
+                clazz.isAnnotationPresent(Controller.class);
     }
 
     /**
@@ -137,5 +141,20 @@ public class BeanFactory {
         for (Map.Entry<String, Object> entry : beansByName.entrySet()) {
             System.out.println("  - " + entry.getKey() + " -> " + entry.getValue().getClass().getSimpleName());
         }
+    }
+
+    public List<Object> getBeansWithAnnotation(Class<? extends Annotation> annotationType) {
+        List<Object> result = new ArrayList<>();
+
+        // beansByName 사용 (일관성 유지)
+        for (Map.Entry<String, Object> entry : beansByName.entrySet()) {
+            Object bean = entry.getValue();
+            if (bean.getClass().isAnnotationPresent(annotationType)) {
+                result.add(bean);
+                System.out.println("🎯 " + annotationType.getSimpleName() + " 발견: " + bean.getClass().getSimpleName());
+            }
+        }
+
+        return result;
     }
 }

@@ -1,5 +1,6 @@
 package com.melt.context;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 /**
@@ -77,5 +78,9 @@ public class ApplicationContext {
      */
     public void printBeanInfo() {
         beanFactory.printAllBeans();
+    }
+
+    public List<Object> getBeansWithAnnotation(Class<? extends Annotation> annotationType) {
+        return beanFactory.getBeansWithAnnotation(annotationType);
     }
 }
