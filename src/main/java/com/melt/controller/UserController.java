@@ -3,22 +3,28 @@ package com.melt.controller;
 
 import com.melt.annotation.Controller;
 import com.melt.annotation.RequestMapping;
+import com.melt.annotation.RequestMethod;
 
 @Controller
 public class UserController {
 
-    @RequestMapping("/hello")
-    public String hello() {
-        return "Hello from UserController! 🎉";
-    }
-
-    @RequestMapping("/users")
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
     public String getUsers() {
-        return "User List: [user1, user2, user3] 👥";
+        return "GET: User List [user1, user2, user3]";
     }
 
-    @RequestMapping("/users/count")
-    public String getUserCount() {
-        return "Total Users: 42 📊";
+    @RequestMapping(value = "/users", method = RequestMethod.POST)
+    public String createUser() {
+        return "POST: User created successfully!";
+    }
+
+    @RequestMapping(value = "/users", method = RequestMethod.PUT)
+    public String updateUser() {
+        return "PUT: User updated successfully!";
+    }
+
+    @RequestMapping(value = "/users", method = RequestMethod.DELETE)
+    public String deleteUser() {
+        return "DELETE: User deleted successfully!";
     }
 }

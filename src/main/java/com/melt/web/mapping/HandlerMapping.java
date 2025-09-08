@@ -2,6 +2,7 @@ package com.melt.web.mapping;
 
 import com.melt.annotation.Controller;
 import com.melt.annotation.RequestMapping;
+import com.melt.annotation.RequestMethod;
 import com.melt.web.method.HandlerMethod;
 
 import java.lang.reflect.Method;
@@ -29,16 +30,18 @@ public class HandlerMapping {
         Class<?> clazz = controller.getClass();
 
         if (clazz.isAnnotationPresent(Controller.class)){
-            System.out.println("🔍 Controller 스캔: " + clazz.getSimpleName());
-
             Method[] methods = clazz.getDeclaredMethods();
+
             for (Method method : methods) {
                 if (method.isAnnotationPresent(RequestMapping.class)){
                     RequestMapping mapping = method.getAnnotation(RequestMapping.class);
                     String url = mapping.value();
+                    RequestMethod httpMethod = mapping.method();
+
+                    String mappingKey = httpMethod.name() + ":" + url;
 
                     HandlerMethod handlerMethod = new HandlerMethod(controller, method);
-                    mappings.put(url, handlerMethod);
+                    mappings.put(mappingKey, handlerMethod);
 
                     System.out.println("✅ 매핑 등록: " + url + " -> " + handlerMethod);
                 }
@@ -46,10 +49,15 @@ public class HandlerMapping {
         }
     }
 
-    // URL로 핸들러 찾기
-    public HandlerMethod getHandler(String url) {
-        return mappings.get(url);
+    public HandlerMethod getHandler(String url, String httpMethod) {
+        String mappingKey = httpMethod + ":" + url;
+        return mappings.get(mappingKey);
     }
+
+    public HandlerMethod getHandler(String url) {
+        return getHandler(url, "GET");
+    }
+
 
     // 등록된 모든 매핑 정보 출력 (디버깅용)
     public void printMappings() {

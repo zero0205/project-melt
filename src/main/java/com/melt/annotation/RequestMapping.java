@@ -6,5 +6,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequestMapping {
     String value();
-    String method() default "GET";
+    RequestMethod method() default RequestMethod.GET;
 }

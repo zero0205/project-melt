@@ -52,19 +52,19 @@ public class DispatcherServlet extends HttpServlet {
     private void handleRequest(String method, HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         String uri = req.getRequestURI();
+        String httpMethod = req.getMethod();
 
         System.out.println("📥 요청: " + method + " " + uri);
 
         resp.setContentType("text/plain; charset=UTF-8");
 
         // HandlerMapping에서 적절한 핸들러 찾기
-        HandlerMethod handler = handlerMapping.getHandler(uri);
+        HandlerMethod handler = handlerMapping.getHandler(uri, httpMethod);
 
         if (handler != null) {
             try {
-                System.out.println("🎯 핸들러 실행: " + handler);
+                System.out.println("🎯 핸들러 실행: " + httpMethod + " " + handler);
 
-                // 실제 Controller 메소드 호출!
                 Object result = handler.getMethod().invoke(handler.getController());
                 resp.getWriter().write(String.valueOf(result));
 
