@@ -3,6 +3,7 @@ package com.melt;
 import com.melt.web.servlet.DispatcherServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,8 +15,9 @@ public class Main {
         context.setContextPath("/");
 
         //DispatcherServlet 등록
-        context.addServlet(DispatcherServlet.class, "/*");
-
+        ServletHolder servletHolder = new ServletHolder(new DispatcherServlet());
+        servletHolder.setInitOrder(1);
+        context.addServlet(servletHolder, "/*");
         server.setHandler(context);
 
         try {
