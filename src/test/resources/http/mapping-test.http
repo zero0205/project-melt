@@ -1,11 +1,41 @@
-### GET /users
-GET http://localhost:8080/users
+### 1. RequestParam 테스트 - GET /users?name=john&age=25
+GET http://localhost:8080/users?name=john&age=25
 
-### POST /users
+### 2. PathVariable 테스트 - GET /users/{id}
+GET http://localhost:8080/users/123
+
+### 3. RequestBody 테스트 - POST /users (JSON)
 POST http://localhost:8080/users
+Content-Type: application/json
 
-### PUT /users
-PUT http://localhost:8080/users
+{
+  "name": "john",
+  "age": 25
+}
 
-### DELETE /users
-DELETE http://localhost:8080/users
+### 4. 복합 테스트 - PUT /users/{id}?status=active
+PUT http://localhost:8080/users/123?status=active
+
+### 5. DELETE 테스트 - DELETE /users/{id}
+DELETE http://localhost:8080/users/123
+
+### 추가 테스트 케이스들
+
+### PathVariable 다른 ID로 테스트
+GET http://localhost:8080/users/456
+
+### RequestParam 다른 값으로 테스트
+GET http://localhost:8080/users?name=alice&age=30
+
+### PUT 다른 상태로 테스트
+PUT http://localhost:8080/users/789?status=inactive
+
+### 복잡한 JSON 데이터 테스트
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "name": "complex user",
+  "age": 35,
+  "email": "test@example.com"
+}
