@@ -48,35 +48,52 @@ public class DispatcherServlet extends HttpServlet {
         handleRequest("POST", req, resp);
     }
 
-    // 🔥 하드코딩 제거! HandlerMapping 사용!
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        handleRequest("PUT", req, resp);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        handleRequest("DELETE", req, resp);
+    }
+
+    // 🔥 단순화된 요청 처리 - HandlerMapping에게 위임
     private void handleRequest(String method, HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         String uri = req.getRequestURI();
         String httpMethod = req.getMethod();
 
-        System.out.println("📥 요청: " + method + " " + uri);
-
-        resp.setContentType("text/plain; charset=UTF-8");
+        System.out.println("📥 요청: " + httpMethod + " " + uri);
 
         // HandlerMapping에서 적절한 핸들러 찾기
         HandlerMethod handler = handlerMapping.getHandler(uri, httpMethod);
 
-        if (handler != null) {
-            try {
-                System.out.println("🎯 핸들러 실행: " + httpMethod + " " + handler);
-
-                Object result = handler.getMethod().invoke(handler.getController());
-                resp.getWriter().write(String.valueOf(result));
-
-            } catch (Exception e) {
-                System.err.println("❌ 핸들러 실행 오류: " + e.getMessage());
-                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                resp.getWriter().write("Internal Server Error: " + e.getMessage());
-            }
-        } else {
-            System.out.println("❌ 핸들러 없음: " + uri);
+        if (handler == null) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            resp.getWriter().write("404 Not Found: " + uri);
+            resp.getWriter().write("Handler not found for: " + httpMethod + " " + uri);
+            return;
+        }
+
+        try {
+            System.out.println("🎯 핸들러 실행: " + httpMethod + " " + handler);
+
+            // HandlerMapping에게 파라미터 준비 위임
+            Object[] methodArgs = handlerMapping.prepareMethodArguments(handler, req, uri);
+
+            // 컨트롤러 메소드 실행
+            Object result = handler.getMethod().invoke(handler.getController(), methodArgs);
+
+            // JSON 응답으로 설정
+            resp.setContentType("application/json;charset=UTF-8");
+            resp.getWriter().write(String.valueOf(result));
+
+        } catch (Exception e) {
+            System.err.println("❌ 핸들러 실행 오류: " + e.getMessage());
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("Internal Server Error: " + e.getMessage());
         }
     }
 }
