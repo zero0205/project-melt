@@ -2,6 +2,7 @@ package com.melt.context;
 
 import com.melt.annotation.Component;
 import com.melt.annotation.Controller;
+import com.melt.annotation.RestController;
 import com.melt.annotation.Service;
 import com.melt.annotation.Repository;
 
@@ -77,7 +78,8 @@ public class BeanFactory {
         return clazz.isAnnotationPresent(Component.class) ||
                 clazz.isAnnotationPresent(Service.class) ||
                 clazz.isAnnotationPresent(Repository.class) ||
-                clazz.isAnnotationPresent(Controller.class);
+                clazz.isAnnotationPresent(Controller.class) ||
+                clazz.isAnnotationPresent(RestController.class);
     }
 
     /**
