@@ -1,41 +1,109 @@
-### 1. RequestParam 테스트 - GET /users?name=john&age=25
-GET http://localhost:8080/users?name=john&age=25
+# ===================================
+# 🧪 Melt Spring REST API 테스트 수트
+# ===================================
 
-### 2. PathVariable 테스트 - GET /users/{id}
-GET http://localhost:8080/users/123
+# 📋 새로운 REST API 어노테이션 테스트 (@RestController + HTTP 메소드 어노테이션)
 
-### 3. RequestBody 테스트 - POST /users (JSON)
-POST http://localhost:8080/users
+### 1. @GetMapping - 전체 사용자 조회
+GET http://localhost:8080/api/users
+
+### 2. @GetMapping - 전체 사용자 조회 (RequestParam 검색)
+GET http://localhost:8080/api/users?name=john&age=25
+
+### 3. @GetMapping - 특정 사용자 조회 (PathVariable)
+GET http://localhost:8080/api/users/123
+
+### 4. @PostMapping - 사용자 생성 (RequestBody)
+POST http://localhost:8080/api/users
 Content-Type: application/json
 
 {
-  "name": "john",
-  "age": 25
+  "name": "John Doe",
+  "age": 30,
+  "email": "john@example.com"
 }
 
-### 4. 복합 테스트 - PUT /users/{id}?status=active
-PUT http://localhost:8080/users/123?status=active
+### 5. @PutMapping - 사용자 전체 수정
+PUT http://localhost:8080/api/users/123
+Content-Type: application/json
 
-### 5. DELETE 테스트 - DELETE /users/{id}
-DELETE http://localhost:8080/users/123
+{
+  "name": "John Updated",
+  "age": 31,
+  "email": "john.updated@example.com"
+}
 
-### 추가 테스트 케이스들
+### 6. @PatchMapping - 사용자 부분 수정
+PATCH http://localhost:8080/api/users/123
+Content-Type: application/json
 
-### PathVariable 다른 ID로 테스트
-GET http://localhost:8080/users/456
+{
+  "age": 32
+}
 
-### RequestParam 다른 값으로 테스트
-GET http://localhost:8080/users?name=alice&age=30
+### 7. @DeleteMapping - 사용자 삭제
+DELETE http://localhost:8080/api/users/123
 
-### PUT 다른 상태로 테스트
-PUT http://localhost:8080/users/789?status=inactive
+### 8. @PutMapping - 사용자 상태 변경 (PathVariable + RequestParam)
+PUT http://localhost:8080/api/users/123/status?status=active
+
+# ===================================
+# 🔄 추가 테스트 케이스들
+# ===================================
+
+### 다양한 PathVariable 테스트
+GET http://localhost:8080/api/users/456
+GET http://localhost:8080/api/users/789
+
+### 다양한 RequestParam 테스트
+GET http://localhost:8080/api/users?name=alice&age=28
+GET http://localhost:8080/api/users?name=bob&age=35
 
 ### 복잡한 JSON 데이터 테스트
-POST http://localhost:8080/users
+POST http://localhost:8080/api/users
 Content-Type: application/json
 
 {
-  "name": "complex user",
-  "age": 35,
-  "email": "test@example.com"
+  "name": "Complex User",
+  "age": 40,
+  "email": "complex@example.com",
+  "department": "Engineering",
+  "skills": ["Java", "Spring", "REST API"]
 }
+
+### PUT으로 복잡한 업데이트
+PUT http://localhost:8080/api/users/999
+Content-Type: application/json
+
+{
+  "name": "Fully Updated User",
+  "age": 45,
+  "email": "updated@example.com",
+  "status": "premium"
+}
+
+### PATCH로 일부만 업데이트
+PATCH http://localhost:8080/api/users/999
+Content-Type: application/json
+
+{
+  "email": "new.email@example.com"
+}
+
+### 다양한 상태 변경 테스트
+PUT http://localhost:8080/api/users/456/status?status=inactive
+PUT http://localhost:8080/api/users/789/status?status=premium
+
+### 다양한 사용자 삭제 테스트
+DELETE http://localhost:8080/api/users/456
+DELETE http://localhost:8080/api/users/789
+
+# ===================================
+# ⚠️  에러 케이스 테스트
+# ===================================
+
+### 존재하지 않는 엔드포인트
+GET http://localhost:8080/api/nonexistent
+
+### 잘못된 HTTP 메소드
+PATCH http://localhost:8080/api/users

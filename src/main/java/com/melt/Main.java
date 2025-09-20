@@ -24,10 +24,12 @@ public class Main {
             System.out.println("=".repeat(50));
             System.out.println("🚀 DispatcherServlet 서버 시작! (Jetty)");
             System.out.println("=".repeat(50));
-            System.out.println("📍 테스트 URL:");
-            System.out.println("   http://localhost:8080/hello");
-            System.out.println("   http://localhost:8080/test");
-            System.out.println("   http://localhost:8080/anything");
+            System.out.println("📍 REST API 테스트 URL:");
+            System.out.println("   GET  http://localhost:8080/api/users");
+            System.out.println("   GET  http://localhost:8080/api/users/123");
+            System.out.println("   POST http://localhost:8080/api/users");
+            System.out.println("   PUT  http://localhost:8080/api/users/123");
+            System.out.println("   DELETE http://localhost:8080/api/users/123");
             System.out.println("=".repeat(50));
             System.out.println("⏹️  서버 중지: Ctrl+C");
             System.out.println("=".repeat(50));
