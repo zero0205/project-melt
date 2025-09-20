@@ -1,8 +1,14 @@
 package com.melt.web.mapping;
 
 import com.melt.annotation.Controller;
+import com.melt.annotation.RestController;
 import com.melt.annotation.RequestMapping;
 import com.melt.annotation.RequestMethod;
+import com.melt.annotation.GetMapping;
+import com.melt.annotation.PostMapping;
+import com.melt.annotation.PutMapping;
+import com.melt.annotation.DeleteMapping;
+import com.melt.annotation.PatchMapping;
 import com.melt.annotation.RequestParam;
 import com.melt.annotation.PathVariable;
 import com.melt.annotation.RequestBody;
@@ -37,22 +43,77 @@ public class HandlerMapping {
     public void registerController(Object controller) {
         Class<?> clazz = controller.getClass();
 
+        // 1) 기존 @Controller 처리 (기존 코드 유지)
         if (clazz.isAnnotationPresent(Controller.class)){
-            Method[] methods = clazz.getDeclaredMethods();
+            registerRequestMappingMethods(controller, clazz);
+        }
 
-            for (Method method : methods) {
-                if (method.isAnnotationPresent(RequestMapping.class)){
-                    RequestMapping mapping = method.getAnnotation(RequestMapping.class);
-                    String url = mapping.value();
-                    RequestMethod httpMethod = mapping.method();
+        // 2) 새로운 @RestController 처리 (신규 추가)
+        if (clazz.isAnnotationPresent(RestController.class)){
+            registerRestControllerMethods(controller, clazz);
+        }
+    }
 
-                    String mappingKey = httpMethod.name() + ":" + url;
+    // 기존 @RequestMapping 처리 로직 (변경 없음)
+    private void registerRequestMappingMethods(Object controller, Class<?> clazz) {
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method method : methods) {
+            if (method.isAnnotationPresent(RequestMapping.class)){
+                RequestMapping mapping = method.getAnnotation(RequestMapping.class);
+                String url = mapping.value();
+                RequestMethod httpMethod = mapping.method();
 
-                    HandlerMethod handlerMethod = new HandlerMethod(controller, method);
-                    mappings.put(mappingKey, handlerMethod);
+                String mappingKey = httpMethod.name() + ":" + url;
+                HandlerMethod handlerMethod = new HandlerMethod(controller, method);
+                mappings.put(mappingKey, handlerMethod);
 
-                    System.out.println("✅ 매핑 등록: " + url + " -> " + handlerMethod);
-                }
+                System.out.println("✅ @RequestMapping 등록: " + url + " -> " + handlerMethod);
+            }
+        }
+    }
+
+    // 새로운 @GetMapping, @PostMapping 등 처리 로직
+    private void registerRestControllerMethods(Object controller, Class<?> clazz) {
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method method : methods) {
+            String mappingKey = null;
+            String url = null;
+
+            // @GetMapping 처리
+            if (method.isAnnotationPresent(GetMapping.class)) {
+                GetMapping mapping = method.getAnnotation(GetMapping.class);
+                url = mapping.value();
+                mappingKey = "GET:" + url;
+            }
+            // @PostMapping 처리
+            else if (method.isAnnotationPresent(PostMapping.class)) {
+                PostMapping mapping = method.getAnnotation(PostMapping.class);
+                url = mapping.value();
+                mappingKey = "POST:" + url;
+            }
+            // @PutMapping 처리
+            else if (method.isAnnotationPresent(PutMapping.class)) {
+                PutMapping mapping = method.getAnnotation(PutMapping.class);
+                url = mapping.value();
+                mappingKey = "PUT:" + url;
+            }
+            // @DeleteMapping 처리
+            else if (method.isAnnotationPresent(DeleteMapping.class)) {
+                DeleteMapping mapping = method.getAnnotation(DeleteMapping.class);
+                url = mapping.value();
+                mappingKey = "DELETE:" + url;
+            }
+            // @PatchMapping 처리
+            else if (method.isAnnotationPresent(PatchMapping.class)) {
+                PatchMapping mapping = method.getAnnotation(PatchMapping.class);
+                url = mapping.value();
+                mappingKey = "PATCH:" + url;
+            }
+
+            if (mappingKey != null) {
+                HandlerMethod handlerMethod = new HandlerMethod(controller, method);
+                mappings.put(mappingKey, handlerMethod);
+                System.out.println("✅ REST API 매핑 등록: " + url + " -> " + handlerMethod);
             }
         }
     }
