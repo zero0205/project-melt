@@ -59,6 +59,23 @@ public class DispatcherServlet extends HttpServlet {
             throws ServletException, IOException {
         handleRequest("DELETE", req, resp);
     }
+    
+    protected void doPatch(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        handleRequest("PATCH", req, resp);
+    }
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        String method = req.getMethod();
+
+        if ("PATCH".equals(method)) {
+            doPatch(req, resp);
+        } else {
+            super.service(req, resp);
+        }
+    }
 
     // 🔥 단순화된 요청 처리 - HandlerMapping에게 위임
     private void handleRequest(String method, HttpServletRequest req, HttpServletResponse resp)
